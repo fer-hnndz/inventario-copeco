@@ -1,19 +1,24 @@
 CREATE TABLE Personas(
-dni STRING,
-nombre STRING NOT NULL
+dni varchar(15) NOT NULL,
+nombre text NOT NULL
+PRIMARY KEY (dni)
 );
 
 CREATE TABLE Insumos(
-id INT PRIMARY KEY,
-descripcion STRING NOT NULL,
-)
+id int NOT NULL,
+descripcion text NOT NULL,
+PRIMARY KEY(id)
+);
 
 CREATE TABLE ES(
-id INT PRIMARY KEY,
-insumo INT,
-fecha LONG,
-cantidad INT,
-procedencia STRING,
-responsable int,
-recibido int,
+id int NOT NULL,
+insumo int,
+fecha timestamp,
+cantidad int,
+procedencia text,
+responsable varchar(15),
+recibido varchar(15),
+PRIMARY KEY(id),
+FOREIGN KEY(responsable) REFERENCES Personas(dni),
+FOREIGN KEY(recibido) REFERENCES Personas(dni)
 );
