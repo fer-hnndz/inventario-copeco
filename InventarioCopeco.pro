@@ -26,3 +26,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     database.sql
+
+RESOURCES += \
+    imagenes.qrc

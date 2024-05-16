@@ -15,6 +15,15 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_rb_inventario_clicked();
+
+    void on_rb_entrada_clicked();
+
+    void on_radioButton_3_clicked();
+
+    void on_btn_ingresar_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

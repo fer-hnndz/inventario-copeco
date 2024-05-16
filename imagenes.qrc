@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>ent.png</file>
+        <file>sal.png</file>
+        <file>menu.png</file>
+        <file>inv.png</file>
+    </qresource>
+</RCC>
