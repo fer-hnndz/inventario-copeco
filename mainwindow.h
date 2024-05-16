@@ -24,6 +24,10 @@ private slots:
 
     void on_btn_ingresar_clicked();
 
+    void on_btn_ingresar_2_clicked();
+
+    void on_btn_actividades_clicked();
+
 private:
     Ui::MainWindow *ui;
 };
