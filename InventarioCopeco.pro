@@ -15,6 +15,7 @@ SOURCES += \
 HEADERS += \
     Database.h \
     Insumo.h \
+    Usuarios.h \
     mainwindow.h
 
 FORMS += \

@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 #include <Database.h>
+#include <string>
+#include <iostream>
+using std::string;
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -29,8 +33,14 @@ private slots:
 
     void on_btn_actividades_clicked();
 
+    void on_rb_agregarInsumo_clicked();
+
+    void on_btn_agregarInsumo_clicked();
+
 private:
     Ui::MainWindow *ui;
     Database db;
+    vector<Usuarios> user;
+    bool esNumero(const string&);
 };
 #endif // MAINWINDOW_H

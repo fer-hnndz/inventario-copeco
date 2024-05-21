@@ -4,5 +4,6 @@
         <file>sal.png</file>
         <file>menu.png</file>
         <file>inv.png</file>
+        <file>agregar.png</file>
     </qresource>
 </RCC>
