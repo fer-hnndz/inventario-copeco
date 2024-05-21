@@ -7,7 +7,6 @@
 #include <QPixmap>
 #include <QLabel>
 #include <istream>
-#include <iostream>
 #include <string>
 #include <sstream>
 #include <QMessageBox>
@@ -18,6 +17,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <QDateTime>
 using std::ofstream;
 using std::ios;
 using std::string;
@@ -44,14 +44,25 @@ MainWindow::MainWindow(QWidget *parent)
     ui->frame->setVisible(false);
     ui->f_acciones->setVisible(false);
 
+    QDateTime fecha = QDateTime::currentDateTime();
+    QString format = fecha.toString("dd/MM/yyyy");
+    ui->lbl_fecha->setText(format);
+
     // Agregar insumos al combo box
 
     vector<Insumo> insumos = db.getAllInsumos();
-
     for(Insumo& ins: insumos) {
         QString item = QString("%1 - %2").arg(QString::number(ins.getId())).arg(QString::fromStdString(ins.getDescripcion()));
         ui->cb_codigo->addItem(item);
     }
+
+    user = db.getUsuarios();
+    for(Usuarios& user: user) {
+        QString item = QString(".").arg(QString::number(user.getId())).arg(QString::fromStdString(user.getNombre())).arg(QString::fromStdString(user.getContrasena()));
+
+    }
+    //no se puede modificar, depende del combobox
+    ui->le_descripcion->setEnabled(false);
 
 }
 
@@ -91,9 +102,18 @@ void MainWindow::on_btn_ingresar_clicked()
     if(ui->le_username->text().isEmpty() || ui->le_contra->text().isEmpty()){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
     }else{
-        ui->f_acciones->setVisible(true);
-        ui->frame->setVisible(true);
-        ui->f_login->setVisible(false);
+        string username = ui->le_username->text().toStdString();
+        string password = ui->le_contra->text().toStdString();
+        user = db.getUsuarios();
+        if(db.existeUsuario(user, password, username)) {
+            ui->f_acciones->setVisible(true);
+            ui->frame->setVisible(true);
+            ui->f_login->setVisible(false);
+
+        }else{
+            QMessageBox::warning(this,  "Datos incongruentes","Usuario o clave incorrecta");
+        }
+
     }
 }
 //este es para cerrar sesion
@@ -104,6 +124,8 @@ void MainWindow::on_btn_ingresar_2_clicked()
     ui->frame->setVisible(false);
     ui->f_login->setVisible(true);
     ui->f_acciones->setVisible(false);
+    ui->le_contra->clear();
+    ui->le_username->clear();
 }
 
 void MainWindow::on_btn_actividades_clicked()
@@ -120,4 +142,40 @@ void MainWindow::on_btn_actividades_clicked()
     }
 }
 
+void MainWindow::on_rb_agregarInsumo_clicked()
+{
+    QImage menu(":/new/prefix1/agregar.png");
+    ui->lbl_png->setPixmap(QPixmap::fromImage(menu));
+    ui->tab_copeco->setCurrentIndex(2);
+}
+void MainWindow::on_btn_agregarInsumo_clicked()
+{
+    if(ui->le_codigoA->text().isEmpty() || ui->le_descripcionA->text().isEmpty()){
+        QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
+    }else if(esNumero(ui->le_codigoA->text().toStdString())){
+        QMessageBox::information(this,  "Datos congruentes","Nuevo insumo ha sido registrado.");
+        //recordar que se debe inicializar su cantidad, saldo y entradas en 0
+        ui->le_codigoA->clear();
+        ui->le_descripcionA->clear();
+    }
+
+}
+
+bool MainWindow::esNumero(const std::string &tt)
+{
+    for (char car : tt) {
+        if (!std::isdigit(car)) {
+            QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de que el codigo solo contenga digitos");
+            return false;
+        }
+    }
+    return true;
+}
+
+
 //DESPUES DE AQUI METAN EL CODIGO PENSANTE
+
+
+
+
+

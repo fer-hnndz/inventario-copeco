@@ -1,6 +1,7 @@
 CREATE TABLE Personas(
 dni varchar(15) NOT NULL,
-nombre text NOT NULL
+nombre text NOT NULL,
+password text NOT NULL
 PRIMARY KEY (dni)
 );
 
