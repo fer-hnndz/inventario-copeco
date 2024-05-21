@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->tab_copeco->tabBar()->hide();
 
-    Database db;
     if(db.connect()) {
         cout << "success\n";
     } else QMessageBox::warning(this,  "Base de datos","Error de conexion");
@@ -44,6 +43,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lbl_2->setStyleSheet("background-color: #000000;");
     ui->frame->setVisible(false);
     ui->f_acciones->setVisible(false);
+
+    // Agregar insumos al combo box
+
+    vector<Insumo> insumos = db.getAllInsumos();
+
+    for(Insumo& ins: insumos) {
+        QString item = QString("%1 - %2").arg(QString::number(ins.getId())).arg(QString::fromStdString(ins.getDescripcion()));
+        ui->cb_codigo->addItem(item);
+    }
 
 }
 
