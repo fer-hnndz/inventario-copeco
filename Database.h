@@ -60,6 +60,7 @@ public:
 
             users.push_back(user);
         }
+
         //usuario de prueba directo
         Usuarios u(455, "OMAR", "123OMAR");
         users.push_back(u);
@@ -135,7 +136,7 @@ private:
         if (!conn.isOpen()) return;
 
         QSqlQuery schemaQuery(conn);
-        schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL), password TEXT NOT NULL;");
+        schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL, password TEXT NOT NULL);");
         schemaQuery.exec("CREATE TABLE Insumos(id INTEGER PRIMARY KEY, descripcion TEXT NOT NULL);");
         schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY, insumo INTEGER, fecha TEXT, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
         conn.commit();
