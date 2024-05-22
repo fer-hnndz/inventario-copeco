@@ -154,6 +154,9 @@ void MainWindow::on_btn_agregarInsumo_clicked()
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
     }else if(esNumero(ui->le_codigoA->text().toStdString())){
         QMessageBox::information(this,  "Datos congruentes","Nuevo insumo ha sido registrado.");
+        //int codigo=id
+        //string descripcion
+        db.agregarInsumos(ui->le_codigoA->text().toInt(),ui->le_descripcionA->text().toStdString());
         //recordar que se debe inicializar su cantidad, saldo y entradas en 0
         ui->le_codigoA->clear();
         ui->le_descripcionA->clear();

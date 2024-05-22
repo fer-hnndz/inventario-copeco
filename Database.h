@@ -82,6 +82,19 @@ public:
         return false;
     }
 
+    bool agregarInsumos(int codigo, string descripcion) {
+        if (!conn.isOpen()) return false;
+
+        QSqlQuery query(conn);
+        query.prepare("INSERT INTO insumos (id, descripcion) VALUES (:codigo, :descripcion);");
+        query.bindValue(":codigo", codigo);
+        query.bindValue(":descripcion", QString::fromStdString(descripcion));
+
+        if (!query.exec()) {
+            return false;
+        }
+        return true;
+    }
 
 
 private:
