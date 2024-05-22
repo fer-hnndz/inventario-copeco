@@ -7,6 +7,7 @@
 #include "Insumo.h"
 #include "Usuarios.h"
 #include <vector>
+#include <QDateTime>
 
 using std::vector;
 
@@ -48,7 +49,7 @@ public:
     }
     vector<Usuarios> getUsuarios() {
         QSqlQuery query(conn);
-        query.exec("SELECT * FROM insumos;");
+        query.exec("SELECT * FROM Personas;");
 
         vector<Usuarios> users;
         while(query.next()) {
@@ -59,7 +60,7 @@ public:
 
             users.push_back(user);
         }
-//usuario de prueba directo
+        //usuario de prueba directo
         Usuarios u(455, "OMAR", "123OMAR");
         users.push_back(u);
         Usuarios us(455, "IVAN", "IVANPOTENTE");
@@ -96,6 +97,35 @@ public:
         return true;
     }
 
+    //Agrega una entrada a la tabla de entradas
+    /*
+     *TODO:
+     *- Agregar al ui campos de procedencia, nombre del responsable y recibe.
+     *- Hacer actualizaciones en el inventario para que se refleje las entradas
+     *- Hacer el query de la entrada
+     */
+    bool registrarEntrada(int cantidad){
+        // Registrar fecha y hora y convertirla a string
+
+
+        if (!conn.isOpen()) {
+            return false;
+        }else{
+
+            QDateTime currentDateTime = QDateTime::currentDateTime();
+            QString date = currentDateTime.date().toString(Qt::ISODate);
+            QString time = currentDateTime.time().toString(Qt::ISODate);
+            QString fechahora = date + time;
+
+            QSqlQuery query(conn);
+            //query.prepare("INSERT INTO ES (fecha, cantidad) VALUES (:id, :fechahora, :cantidad);");
+            return true;
+        }
+
+
+        return false;
+    }
+
 
 private:
     /*
@@ -107,7 +137,7 @@ private:
         QSqlQuery schemaQuery(conn);
         schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL), password TEXT NOT NULL;");
         schemaQuery.exec("CREATE TABLE Insumos(id INTEGER PRIMARY KEY, descripcion TEXT NOT NULL);");
-        schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY, insumo INTEGER, fecha INTEGER, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
+        schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY, insumo INTEGER, fecha TEXT, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
         conn.commit();
     }
 };

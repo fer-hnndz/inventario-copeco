@@ -132,8 +132,22 @@ void MainWindow::on_btn_actividades_clicked()
 {
     if(ui->le_descripcion->text().isEmpty() || ui->cb_codigo->currentIndex()==0 || ui->sp_cant->text().toUInt()==0 || ui->sp_saldo->text().toDouble()==0 || ui->sp_entradas_salidas->text().toUInt()==0){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
-    }else{
-        QMessageBox::information(this,  "Datos congruentes","Datos han sido ingresados con éxito.");
+
+        /*
+         * CUANDO SE QUIERE HACER ENTRADA
+         */
+    }else if (ui->rb_entrada->isChecked()){
+        /*
+            WIP  -  ENTRADA
+        */
+        int codigoE = ui->cb_codigo->currentText().toInt();
+        string descripcionE = ui->le_descripcion->text().toStdString();
+        int cantidadE = ui->sp_cant->value();
+        int entradasE = ui->sp_entradas_salidas->value();
+        double saldoE = ui->sp_saldo->value();
+
+        db.registrarEntrada(cantidadE);
+        QMessageBox::information(this,  "Datos congruentes","(WIP) Datos han sido ingresados con éxito. (WIP)");
         ui->le_descripcion->clear();
         ui->cb_codigo->setCurrentIndex(0);
         ui->sp_cant->clear();
