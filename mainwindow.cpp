@@ -48,11 +48,17 @@ MainWindow::MainWindow(QWidget *parent)
     QString format = fecha.toString("dd/MM/yyyy");
     ui->lbl_fecha->setText(format);
 
+    // Deshabilitar componentes que son para mostrar info
+
+    ui->le_descripcion->setDisabled(true); // descripcion de entradas
+    ui->sp_saldo->setDisabled(true);
+    ui->sp_entradas_salidas->setDisabled(true);
+
     // Agregar insumos al combo box
 
     vector<Insumo> insumos = db.getAllInsumos();
     for(Insumo& ins: insumos) {
-        QString item = QString("%1 - %2").arg(QString::number(ins.getId())).arg(QString::fromStdString(ins.getDescripcion()));
+        QString item = QString("%1").arg(QString::number(ins.getId()));
         ui->cb_codigo->addItem(item);
     }
 
@@ -195,4 +201,25 @@ bool MainWindow::esNumero(const std::string &tt)
 
 
 
+
+
+void MainWindow::on_cb_codigo_currentTextChanged(const QString &arg1)
+{
+    int id = arg1.toInt();
+
+    /*
+    Insumo i(0, "a"); // crear un insumo vacio
+    db.getInsumoById(id, i);
+    */
+
+    Insumo *i = db.getInsumoById(id);
+
+
+    if (i->getDescripcion() == "a")
+        ui->le_descripcion->clear();
+    else
+        ui->le_descripcion->setText(QString::fromStdString(i->getDescripcion()));
+
+    delete i;
+}
 

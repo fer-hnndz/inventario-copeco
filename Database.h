@@ -47,6 +47,40 @@ public:
         return insumos;
 
     }
+
+    /*
+     * Asigna el insumo con la id especificada al parametro `encontrado`
+     * Si no se encuentra ese insumo, el valor de `encontrado` no es modificado.
+     */
+    void getInsumoById(int id, Insumo &encontrado) {
+        vector<Insumo> insumos = getAllInsumos();
+
+        for (Insumo i: insumos) {
+            if (i.getId() == id) {
+                encontrado = i;
+                break;
+            }
+        }
+    }
+
+    /*
+     * Retorna un puntero del insumo con la ID especificada.
+     * Retorna nullptr si no fue encontrado.
+     *
+     * NOTA: Este puntero se debe borrar una vez terminado de usarse.
+     */
+    Insumo* getInsumoById(int id) {
+        vector<Insumo> insumos = getAllInsumos();
+        for (int i = 0; i < insumos.size(); i++) {
+
+            if (insumos.at(i).getId() == id) {
+                Insumo ins = insumos.at(i);
+                return new Insumo(ins.getId(), ins.getDescripcion());
+            }
+        }
+        return nullptr;
+    }
+
     vector<Usuarios> getUsuarios() {
         QSqlQuery query(conn);
         query.exec("SELECT * FROM Personas;");

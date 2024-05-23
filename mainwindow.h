@@ -37,6 +37,8 @@ private slots:
 
     void on_btn_agregarInsumo_clicked();
 
+    void on_cb_codigo_currentTextChanged(const QString &arg1);
+
 private:
     Ui::MainWindow *ui;
     Database db;
