@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->sp_saldo->setDisabled(true);
     ui->sp_entradas_salidas->setDisabled(true);
 
+
     // Agregar insumos al combo box
 
     vector<Insumo> insumos = db.getAllInsumos();
@@ -136,29 +137,34 @@ void MainWindow::on_btn_ingresar_2_clicked()
 
 void MainWindow::on_btn_actividades_clicked()
 {
-    if(ui->le_descripcion->text().isEmpty() || ui->cb_codigo->currentIndex()==0 || ui->sp_cant->text().toUInt()==0 || ui->sp_saldo->text().toDouble()==0 || ui->sp_entradas_salidas->text().toUInt()==0){
+    if(ui->le_descripcion->text().isEmpty() || ui->cb_codigo->currentIndex()==0 || ui->sp_cant->text().toUInt()==0 ){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
 
         /*
          * CUANDO SE QUIERE HACER ENTRADA
          */
     }else if (ui->rb_entrada->isChecked()){
-        /*
-            WIP  -  ENTRADA
-        */
         int codigoE = ui->cb_codigo->currentText().toInt();
         string descripcionE = ui->le_descripcion->text().toStdString();
         int cantidadE = ui->sp_cant->value();
-        int entradasE = ui->sp_entradas_salidas->value();
-        double saldoE = ui->sp_saldo->value();
+        string procedencia = ui->le_procedencia->text().toStdString();
+        string responsable = ui->le_responsable->text().toStdString();
+        string recibe = ui->le_recibido->text().toStdString();
 
-        db.registrarEntrada(cantidadE);
-        QMessageBox::information(this,  "Datos congruentes","(WIP) Datos han sido ingresados con éxito. (WIP)");
-        ui->le_descripcion->clear();
-        ui->cb_codigo->setCurrentIndex(0);
-        ui->sp_cant->clear();
-        ui->sp_entradas_salidas->clear();
-        ui->sp_saldo->clear();
+        if (db.registrarEntrada(codigoE,cantidadE,procedencia,responsable,recibe)){
+            QMessageBox::information(this,  "Datos congruentes","Datos han sido ingresados con éxito.");
+            //ui->cb_codigo->setCurrentIndex(0); ESTO CRASHEA
+            ui->le_descripcion->clear();
+            ui->sp_cant->clear();
+            ui->sp_entradas_salidas->clear();
+            ui->sp_saldo->clear();
+            ui->le_procedencia->clear();
+            ui->le_responsable->clear();
+            ui->le_recibido->clear();
+
+        }else{
+            QMessageBox::information(this,  "Datos incongruentes","No se ha podido generar la entrada.");
+        }
     }
 }
 
@@ -180,6 +186,8 @@ void MainWindow::on_btn_agregarInsumo_clicked()
         //recordar que se debe inicializar su cantidad, saldo y entradas en 0
         ui->le_codigoA->clear();
         ui->le_descripcionA->clear();
+
+        //actualiarCBES();
     }
 
 }
@@ -194,13 +202,6 @@ bool MainWindow::esNumero(const std::string &tt)
     }
     return true;
 }
-
-
-//DESPUES DE AQUI METAN EL CODIGO PENSANTE
-
-
-
-
 
 
 void MainWindow::on_cb_codigo_currentTextChanged(const QString &arg1)
@@ -222,4 +223,17 @@ void MainWindow::on_cb_codigo_currentTextChanged(const QString &arg1)
 
     delete i;
 }
+
+//DESPUES DE AQUI METAN EL CODIGO PENSANTE
+
+void MainWindow::actualiarCBES()
+{
+    //ui->cb_codigo->clear(); ESTO CRASHEA
+    vector<Insumo> insumos = db.getAllInsumos();
+    for(Insumo& ins: insumos) {
+        QString item = QString("%1").arg(QString::number(ins.getId()));
+        ui->cb_codigo->addItem(item);
+    }
+}
+
 

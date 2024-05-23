@@ -8,6 +8,8 @@
 #include "Usuarios.h"
 #include <vector>
 #include <QDateTime>
+#include <QDebug>
+#include <QSqlError>
 
 using std::vector;
 
@@ -135,31 +137,41 @@ public:
     //Agrega una entrada a la tabla de entradas
     /*
      *TODO:
-     *- Agregar al ui campos de procedencia, nombre del responsable y recibe.
      *- Hacer actualizaciones en el inventario para que se refleje las entradas
-     *- Hacer el query de la entrada
      */
-    bool registrarEntrada(int cantidad){
-        // Registrar fecha y hora y convertirla a string
-
-
+    bool registrarEntrada(int insumo, int cantidad, std::string procedencia, std::string responsable, std::string recibido) {
         if (!conn.isOpen()) {
+            qDebug() << "Error: La conexión a la base de datos no está abierta.";
             return false;
-        }else{
-
-            QDateTime currentDateTime = QDateTime::currentDateTime();
-            QString date = currentDateTime.date().toString(Qt::ISODate);
-            QString time = currentDateTime.time().toString(Qt::ISODate);
-            QString fechahora = date + time;
-
-            QSqlQuery query(conn);
-            //query.prepare("INSERT INTO ES (fecha, cantidad) VALUES (:id, :fechahora, :cantidad);");
-            return true;
         }
 
+        // Registrar fecha y hora y convertirla a string
+        QDateTime currentDateTime = QDateTime::currentDateTime();
+        QString fechahora = currentDateTime.toString("yyyy-MM-dd HH:mm:ss");
 
-        return false;
+        QSqlQuery query(conn);
+        query.prepare(
+                    "INSERT INTO ES "
+                    "(insumo, fecha, cantidad, procedencia, responsable, recibido) "
+                    "VALUES (:insumo, :fechahora, :cantidad, :procedencia, :responsable, :recibido);");
+        query.bindValue(":insumo", insumo);
+        query.bindValue(":fechahora", fechahora);
+        query.bindValue(":cantidad", cantidad);
+        query.bindValue(":procedencia", QString::fromStdString(procedencia));
+        query.bindValue(":responsable", QString::fromStdString(responsable));
+        query.bindValue(":recibido", QString::fromStdString(recibido));
+
+        qDebug() << "Datos a insertar: insumo =" << insumo << ", fecha =" << fechahora << ", cantidad =" << cantidad
+                 << ", procedencia =" << QString::fromStdString(procedencia) << ", responsable =" << QString::fromStdString(responsable)
+                 << ", recibido =" << QString::fromStdString(recibido);
+
+        if (!query.exec()) {
+            qDebug() << "Error al ejecutar el query de entrada:" << query.lastError().text();
+            return false;
+        }
+        return true;
     }
+
 
 
 private:
@@ -172,7 +184,7 @@ private:
         QSqlQuery schemaQuery(conn);
         schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL, password TEXT NOT NULL);");
         schemaQuery.exec("CREATE TABLE Insumos(id INTEGER PRIMARY KEY, descripcion TEXT NOT NULL);");
-        schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY, insumo INTEGER, fecha TEXT, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
+        schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY AUTOINCREMENT, insumo INTEGER, fecha TEXT, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
         conn.commit();
     }
 };
