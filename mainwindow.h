@@ -39,6 +39,9 @@ private slots:
 
     void on_cb_codigo_currentTextChanged(const QString &arg1);
 
+
+    void on_RB_Recibir_clicked();
+
 private:
     Ui::MainWindow *ui;
     Database db;

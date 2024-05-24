@@ -165,6 +165,28 @@ void MainWindow::on_btn_actividades_clicked()
         }else{
             QMessageBox::information(this,  "Datos incongruentes","No se ha podido generar la entrada.");
         }
+    }else if (ui->RB_Recibir->isChecked()){
+        int codigoE = ui->cb_codigo->currentText().toInt();
+        string descripcionE = ui->le_descripcion->text().toStdString();
+        int cantidadE = ui->sp_cant->value();
+        string procedencia = ui->le_procedencia->text().toStdString();
+        string responsable = ui->le_responsable->text().toStdString();
+        string recibe = ui->le_recibido->text().toStdString();
+
+        if (db.recibir(codigoE,cantidadE,procedencia,responsable,recibe)){
+            QMessageBox::information(this,  "Datos congruentes","Producto ha sido recibido con éxito.");
+            //ui->cb_codigo->setCurrentIndex(0); ESTO CRASHEA
+            ui->le_descripcion->clear();
+            ui->sp_cant->clear();
+            ui->sp_entradas_salidas->clear();
+            ui->sp_saldo->clear();
+            ui->le_procedencia->clear();
+            ui->le_responsable->clear();
+            ui->le_recibido->clear();
+
+        }else{
+            QMessageBox::information(this,  "Datos incongruentes","No se ha podido recibir el producto.");
+        }
     }
 }
 
@@ -236,4 +258,12 @@ void MainWindow::actualiarCBES()
     }
 }
 
+
+
+void MainWindow::on_RB_Recibir_clicked()
+{
+    ui->lbl_entradas->setText("Recibidos:");
+    ui->tab_copeco->setCurrentIndex(1);
+
+}
 

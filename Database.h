@@ -147,7 +147,7 @@ public:
 
         // Registrar fecha y hora y convertirla a string
         QDateTime currentDateTime = QDateTime::currentDateTime();
-        QString fechahora = currentDateTime.toString("yyyy-MM-dd HH:mm:ss");
+        QString fechahora=currentDateTime.toString("yyyy-MM-dd HH:mm:ss");
 
         QSqlQuery query(conn);
         query.prepare(
@@ -172,8 +172,48 @@ public:
         return true;
     }
 
+    bool recibir(int insumo, int cantidad, std::string procedencia, std::string responsable, std::string recibido) {
+        // Verificar si ya existe la entrada
+        QSqlQuery checkQuery(conn);
+        checkQuery.prepare("SELECT id FROM ES WHERE insumo = :insumo AND procedencia = :procedencia AND responsable = :responsable AND recibido = :recibido;");
+        checkQuery.bindValue(":insumo", insumo);
+        checkQuery.bindValue(":procedencia", QString::fromStdString(procedencia));
+        checkQuery.bindValue(":responsable", QString::fromStdString(responsable));
+        checkQuery.bindValue(":recibido", QString::fromStdString(recibido));
+        if (!checkQuery.exec()) {
+            qDebug() << "Error al ejecutar la consulta de verificación:" << checkQuery.lastError().text();
+            return false;
+        }
 
+        // Si no existe la entrada no se agrega el producto
+        if (!checkQuery.next()) {
+            qDebug() << "Error: No se encontró la entrada correspondiente.";
+            return false;
+        }
 
+        // Puede ser recibido
+        QDateTime currentDateTime = QDateTime::currentDateTime();
+        QString fechahora = currentDateTime.toString("yyyy-MM-dd HH:mm:ss");
+
+        QSqlQuery insertQuery(conn);
+        insertQuery.prepare(
+            "INSERT INTO ES "
+            "(insumo, fecha, cantidad, procedencia, responsable, recibido) "
+            "VALUES (:insumo, :fechahora, :cantidad, :procedencia, :responsable, :recibido);");
+        insertQuery.bindValue(":insumo", insumo);
+        insertQuery.bindValue(":fechahora", fechahora);
+        insertQuery.bindValue(":cantidad", cantidad);
+        insertQuery.bindValue(":procedencia", QString::fromStdString(procedencia));
+        insertQuery.bindValue(":responsable", QString::fromStdString(responsable));
+        insertQuery.bindValue(":recibido", QString::fromStdString(recibido));
+
+        if (!insertQuery.exec()) {
+            qDebug() << "Error al ejecutar el query de recepción:" << insertQuery.lastError().text();
+            return false;
+        }
+
+        return true;
+    }
 private:
     /*
      * Crea las tablas para usar la base de datos
