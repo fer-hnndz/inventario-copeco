@@ -10,6 +10,8 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QSqlError>
+#include <QMessageBox>
+
 
 using std::vector;
 
@@ -34,6 +36,7 @@ public:
      * Returna un vector de todos los insumos registrados
      */
     vector<Insumo> getAllInsumos() {
+
         QSqlQuery query(conn);
         query.exec("SELECT * FROM insumos;");
 
@@ -41,7 +44,11 @@ public:
         while(query.next()) {
             int id = query.value(0).toInt();
             string descripcion = query.value(1).toString().toStdString();
-            Insumo insumo(id, descripcion);
+            int actual = query.value(2).toInt();
+            int entradas = query.value(3).toInt();
+            int salidas = query.value(4).toInt();
+
+            Insumo insumo(id, descripcion,actual,entradas,salidas);
 
             insumos.push_back(insumo);
         }
@@ -77,7 +84,7 @@ public:
 
             if (insumos.at(i).getId() == id) {
                 Insumo ins = insumos.at(i);
-                return new Insumo(ins.getId(), ins.getDescripcion());
+                return new Insumo(ins.getId(), ins.getDescripcion(), ins.getsaldoActual(),ins.getentradas(),ins.getsalidas());
             }
         }
         return nullptr;
@@ -89,26 +96,45 @@ public:
 
         vector<Usuarios> users;
         while(query.next()) {
-            int id = query.value(0).toInt();
+            int dni = query.value(0).toInt();
             string nombre = query.value(1).toString().toStdString();
-            string contrasena = query.value(1).toString().toStdString();
-            Usuarios user(id, nombre, contrasena);
+            string password = query.value(2).toString().toStdString();
+            Usuarios user(dni, nombre, password);
 
             users.push_back(user);
         }
-
-        //usuario de prueba directo
-        Usuarios u(455, "OMAR", "123OMAR");
-        users.push_back(u);
-        Usuarios us(455, "IVAN", "IVANPOTENTE");
-        users.push_back(us);
-        Usuarios user(455, "VIRGILIO", "VIRGILIOPODEROSO");
-        users.push_back(user);
-
-
         return users;
 
     }
+    void crearUsuarios(){
+        QSqlQuery query(conn);
+        query.exec("SELECT * FROM Personas;");
+        query.next();
+        if(query.value(0).toInt()>0){
+            return;
+        }
+        vector<Usuarios> users;
+
+        Usuarios u(123, "OMAR", "123OMAR");
+        users.push_back(u);
+        Usuarios us(456, "VIRGILIO", "VIRGILIOPODERSO");
+        users.push_back(us);
+        Usuarios user(789, "IVAN", "IVANPOTENTE");
+        users.push_back(user);
+
+        query.prepare("INSERT INTO Personas (dni, nombre, password) VALUES (:dni, :nombre, :password);");
+        for (Usuarios& user : users) {
+            query.bindValue(":dni", user.getId());
+            query.bindValue(":nombre", QString::fromStdString(user.getNombre()));
+            query.bindValue(":password", QString::fromStdString(user.getContrasena()));
+            qDebug() << "a" << user.getId()<<"b"<<QString::fromStdString(user.getNombre())<<"b"<<QString::fromStdString(user.getContrasena());
+
+            if (!query.exec()) {
+                qDebug() << "Error al insertar usuario:" << query.lastError().text();
+            }
+        }
+    }
+
     bool existeUsuario(vector<Usuarios> v, string contra, string username){
         for (Usuarios& usuario : v) {
             if (usuario.getNombre() == username) {
@@ -122,17 +148,39 @@ public:
 
     bool agregarInsumos(int codigo, string descripcion) {
         if (!conn.isOpen()) return false;
-
+        int actual=0,entradas=0,salidas=0;
         QSqlQuery query(conn);
-        query.prepare("INSERT INTO insumos (id, descripcion) VALUES (:codigo, :descripcion);");
+
+        query.prepare("INSERT INTO insumos (id, descripcion, actual, entradas, salidas) VALUES (:codigo, :descripcion, :actual, :entradas, :salidas);");
         query.bindValue(":codigo", codigo);
         query.bindValue(":descripcion", QString::fromStdString(descripcion));
+        query.bindValue(":actual", actual);
+        query.bindValue(":entradas", entradas);
+        query.bindValue(":salidas", salidas);
+
 
         if (!query.exec()) {
             return false;
         }
         return true;
     }
+    bool actualizarInsumo( Insumo& insumo) {//se añade o se quita cantidad
+            if (!conn.isOpen()) return false;
+
+            QSqlQuery query(conn);
+            query.prepare("UPDATE Insumos SET actual = :actual, entradas = :entradas, salidas = :salidas WHERE id = :id;");
+            query.bindValue(":actual", insumo.getsaldoActual());
+            query.bindValue(":entradas", insumo.getentradas());
+            query.bindValue(":salidas", insumo.getsalidas());
+            query.bindValue(":id", insumo.getId());
+
+            if (!query.exec()) {
+                qDebug() << "Error al ejecutar el query de actualización de insumo:" << query.lastError().text();
+                return false;
+            }
+
+            return true;
+        }
 
     //Agrega una entrada a la tabla de entradas
     /*
@@ -148,6 +196,50 @@ public:
         // Registrar fecha y hora y convertirla a string
         QDateTime currentDateTime = QDateTime::currentDateTime();
         QString fechahora=currentDateTime.toString("yyyy-MM-dd HH:mm:ss");
+
+        QSqlQuery query(conn);
+        query.prepare(
+                    "INSERT INTO ES "
+                    "(insumo, fecha, cantidad, procedencia, responsable, recibido) "
+                    "VALUES (:insumo, :fechahora, :cantidad, :procedencia, :responsable, :recibido);");
+        query.bindValue(":insumo", insumo);
+        query.bindValue(":fechahora", fechahora);
+        query.bindValue(":cantidad", cantidad);
+        query.bindValue(":procedencia", QString::fromStdString(procedencia));
+        query.bindValue(":responsable", QString::fromStdString(responsable));
+        query.bindValue(":recibido", QString::fromStdString(recibido));
+
+        qDebug() << "Datos a insertar: insumo =" << insumo << ", fecha =" << fechahora << ", cantidad =" << cantidad
+                 << ", procedencia =" << QString::fromStdString(procedencia) << ", responsable =" << QString::fromStdString(responsable)
+                 << ", recibido =" << QString::fromStdString(recibido);
+
+        if (!query.exec()) {
+            qDebug() << "Error al ejecutar el query de entrada:" << query.lastError().text();
+            return false;
+        }
+        return true;
+    }
+    int salidaPosible(int insumo, int cantidad, std::string procedencia, std::string responsable, std::string recibido) {
+        vector<Insumo> insumos = getAllInsumos();
+        for (Insumo& insumooo : insumos) {
+            if (insumooo.getId() == insumo) {
+                int actual = insumooo.getsaldoActual() - cantidad;
+                return (insumooo.getsaldoActual() >= cantidad) ? (registrarSalida(insumo,cantidad,procedencia,responsable,recibido), actual) : -1;
+                break;
+            }
+        }
+    }
+
+    bool registrarSalida(int insumo, int cantidad, std::string procedencia, std::string responsable, std::string recibido) {
+        if (!conn.isOpen()) {
+            qDebug() << "Error: La conexión a la base de datos no está abierta.";
+            return false;
+        }
+
+
+        // Registrar fecha y hora y convertirla a string
+        QDateTime currentDateTime = QDateTime::currentDateTime();
+        QString fechahora = "-" + currentDateTime.toString("yyyy-MM-dd HH:mm:ss");
 
         QSqlQuery query(conn);
         query.prepare(
@@ -223,7 +315,7 @@ private:
 
         QSqlQuery schemaQuery(conn);
         schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL, password TEXT NOT NULL);");
-        schemaQuery.exec("CREATE TABLE Insumos(id INTEGER PRIMARY KEY, descripcion TEXT NOT NULL);");
+        schemaQuery.exec("CREATE TABLE Insumos(id INTEGER PRIMARY KEY, descripcion TEXT NOT NULL, actual INTEGER, entradas INTEGER, salidas INTEGER);");
         schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY AUTOINCREMENT, insumo INTEGER, fecha TEXT, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
         conn.commit();
     }

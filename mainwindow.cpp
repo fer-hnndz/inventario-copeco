@@ -62,12 +62,12 @@ MainWindow::MainWindow(QWidget *parent)
         QString item = QString("%1").arg(QString::number(ins.getId()));
         ui->cb_codigo->addItem(item);
     }
-
+    db.crearUsuarios();
     user = db.getUsuarios();
-    for(Usuarios& user: user) {
-        QString item = QString(".").arg(QString::number(user.getId())).arg(QString::fromStdString(user.getNombre())).arg(QString::fromStdString(user.getContrasena()));
+//    for(Usuarios& user: user) {
+//       // QString item = QString(".").arg(QString::number(user.getId())).arg(QString::fromStdString(user.getNombre())).arg(QString::fromStdString(user.getContrasena()));
 
-    }
+//    }
     //no se puede modificar, depende del combobox
     ui->le_descripcion->setEnabled(false);
 
@@ -101,6 +101,7 @@ void MainWindow::on_radioButton_3_clicked()
     QImage menu(":/new/prefix1/sal.png");
     ui->lbl_png->setPixmap(QPixmap::fromImage(menu));
     ui->lbl_entradas->setText("Salidas:");
+    ui->label->setText("Grupo Destino:");
     ui->tab_copeco->setCurrentIndex(1);
 }
 
@@ -137,6 +138,13 @@ void MainWindow::on_btn_ingresar_2_clicked()
 
 void MainWindow::on_btn_actividades_clicked()
 {
+    bool exitos=false, entrada=false;
+    int codigoE = ui->cb_codigo->currentText().toInt();
+    int cantidadE = ui->sp_cant->value();
+    string descripcionE = ui->le_descripcion->text().toStdString();
+    string procedencia = ui->le_procedencia->text().toStdString();
+    string responsable = ui->le_responsable->text().toStdString();
+    string recibe = ui->le_recibido->text().toStdString();
     if(ui->le_descripcion->text().isEmpty() || ui->cb_codigo->currentIndex()==0 || ui->sp_cant->text().toUInt()==0 ){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
 
@@ -144,49 +152,61 @@ void MainWindow::on_btn_actividades_clicked()
          * CUANDO SE QUIERE HACER ENTRADA
          */
     }else if (ui->rb_entrada->isChecked()){
-        int codigoE = ui->cb_codigo->currentText().toInt();
-        string descripcionE = ui->le_descripcion->text().toStdString();
-        int cantidadE = ui->sp_cant->value();
-        string procedencia = ui->le_procedencia->text().toStdString();
-        string responsable = ui->le_responsable->text().toStdString();
-        string recibe = ui->le_recibido->text().toStdString();
-
         if (db.registrarEntrada(codigoE,cantidadE,procedencia,responsable,recibe)){
             QMessageBox::information(this,  "Datos congruentes","Datos han sido ingresados con éxito.");
-            //ui->cb_codigo->setCurrentIndex(0); ESTO CRASHEA
-            ui->le_descripcion->clear();
-            ui->sp_cant->clear();
-            ui->sp_entradas_salidas->clear();
-            ui->sp_saldo->clear();
-            ui->le_procedencia->clear();
-            ui->le_responsable->clear();
-            ui->le_recibido->clear();
+            exitos=true;
+            entrada=true;
 
         }else{
             QMessageBox::information(this,  "Datos incongruentes","No se ha podido generar la entrada.");
         }
     }else if (ui->RB_Recibir->isChecked()){
-        int codigoE = ui->cb_codigo->currentText().toInt();
-        string descripcionE = ui->le_descripcion->text().toStdString();
-        int cantidadE = ui->sp_cant->value();
-        string procedencia = ui->le_procedencia->text().toStdString();
-        string responsable = ui->le_responsable->text().toStdString();
-        string recibe = ui->le_recibido->text().toStdString();
-
         if (db.recibir(codigoE,cantidadE,procedencia,responsable,recibe)){
             QMessageBox::information(this,  "Datos congruentes","Producto ha sido recibido con éxito.");
-            //ui->cb_codigo->setCurrentIndex(0); ESTO CRASHEA
-            ui->le_descripcion->clear();
-            ui->sp_cant->clear();
-            ui->sp_entradas_salidas->clear();
-            ui->sp_saldo->clear();
-            ui->le_procedencia->clear();
-            ui->le_responsable->clear();
-            ui->le_recibido->clear();
-
+            exitos=true;
+            entrada=true;
         }else{
             QMessageBox::information(this,  "Datos incongruentes","No se ha podido recibir el producto.");
         }
+    }else if(ui->radioButton_3->isChecked()){
+        int proceso=db.salidaPosible(codigoE,cantidadE,procedencia,responsable,recibe);
+        if (proceso !=-1){
+            QMessageBox::information(this, "Datos congruentes", "Producto ha sido retirado con éxito.\nInsumo:  " + QString::number(codigoE)+ "\nSaldo actual restante:  "+QString::number(proceso));
+            exitos=true;
+            entrada=false;
+        }else{
+            QMessageBox::information(this,  "Datos incongruentes","No se ha podido retirar el producto.\nAsegurese que exista suficiente en saldo actual.");
+        }
+    }
+    if(exitos){
+        //  ui->cb_codigo->setCurrentIndex(0); ESTO CRASHEA
+        ui->le_descripcion->clear();
+        ui->sp_cant->clear();
+        ui->sp_entradas_salidas->clear();
+        ui->sp_saldo->clear();
+        ui->le_procedencia->clear();
+        ui->le_responsable->clear();
+        ui->le_recibido->clear();
+
+        vector<Insumo> insumos = db.getAllInsumos();
+        for ( Insumo& insumo : insumos) {
+            if (insumo.getId()==codigoE) {
+                //llamar funcion para que se actualice la tabla insumo
+                if(entrada){
+                    insumo.setentradas(insumo.getentradas()+cantidadE);
+                    insumo.setsaldoActual(insumo.getsaldoActual()+cantidadE);
+                }else{
+                    insumo.setsaldoActual(insumo.getsaldoActual()-cantidadE);
+                    insumo.setsalidas(insumo.getsalidas()+cantidadE);
+                }
+
+                if (!db.actualizarInsumo(insumo)) {
+                    QMessageBox::information(this,  "Datos incongruentes","No se ha podido actualizar DB");
+                }
+                break;
+            }
+        }
+        exitos=false;
     }
 }
 
@@ -201,13 +221,28 @@ void MainWindow::on_btn_agregarInsumo_clicked()
     if(ui->le_codigoA->text().isEmpty() || ui->le_descripcionA->text().isEmpty()){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
     }else if(esNumero(ui->le_codigoA->text().toStdString())){
-        QMessageBox::information(this,  "Datos congruentes","Nuevo insumo ha sido registrado.");
         //int codigo=id
         //string descripcion
-        db.agregarInsumos(ui->le_codigoA->text().toInt(),ui->le_descripcionA->text().toStdString());
-        //recordar que se debe inicializar su cantidad, saldo y entradas en 0
-        ui->le_codigoA->clear();
-        ui->le_descripcionA->clear();
+        // Verificar si el código ya existe
+        short code = ui->le_codigoA->text().toShort();
+        bool exitente = false;
+        vector<Insumo> insumos = db.getAllInsumos();
+        for ( Insumo& insumo : insumos) {
+            if (insumo.getId()==code) {
+                exitente = true;
+                break;
+            }
+        }
+
+        if (!exitente) {
+            db.agregarInsumos(code, ui->le_descripcionA->text().toStdString());
+            QMessageBox::information(this,  "Datos congruentes","Nuevo insumo ha sido registrado.");
+
+            ui->le_codigoA->clear();
+            ui->le_descripcionA->clear();
+        } else {
+            QMessageBox::warning(this, "Datos incongruentes", "El codigo ya existe para otro insumo");
+        }
 
         //actualiarCBES();
     }

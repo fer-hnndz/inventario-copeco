@@ -27,15 +27,67 @@
        <item row="0" column="1">
         <widget class="QTabWidget" name="tab_copeco">
          <property name="currentIndex">
-          <number>2</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_inventario">
           <attribute name="title">
            <string>INVENTARIO</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_7">
-           <item row="0" column="0">
+           <item row="0" column="0" colspan="2">
             <widget class="QTableWidget" name="tableWidget"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QRadioButton" name="rb_verEntradas">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ver entradas</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QRadioButton" name="rb_verSalidas">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ver salidas</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QRadioButton" name="rb_verResumen">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ver Resumen</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QRadioButton" name="rb_verInsumo">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Ver por insumo</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -120,6 +172,9 @@
            </item>
            <item row="4" column="2">
             <widget class="QDoubleSpinBox" name="sp_saldo">
+             <property name="decimals">
+              <number>0</number>
+             </property>
              <property name="maximum">
               <double>1000000.000000000000000</double>
              </property>
@@ -408,61 +463,6 @@
        <enum>QFrame::Raised</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="7" column="0">
-        <widget class="QLabel" name="lbl_fecha">
-         <property name="font">
-          <font>
-           <family>MS Reference Sans Serif</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>FECHA</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0">
-        <widget class="QPushButton" name="btn_ingresar_2">
-         <property name="font">
-          <font>
-           <family>MS Reference Sans Serif</family>
-           <pointsize>8</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>CERRAR SESION</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QRadioButton" name="rb_agregarInsumo">
-         <property name="font">
-          <font>
-           <family>MS Reference Sans Serif</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Agregar insumo</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QRadioButton" name="radioButton_3">
-         <property name="font">
-          <font>
-           <family>MS Reference Sans Serif</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Salida</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="lbl_sesion_2">
          <property name="font">
@@ -479,13 +479,58 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QFrame" name="f_relleno2">
-         <property name="frameShape">
-          <enum>QFrame::StyledPanel</enum>
+       <item row="3" column="0">
+        <widget class="QRadioButton" name="radioButton_3">
+         <property name="font">
+          <font>
+           <family>MS Reference Sans Serif</family>
+           <pointsize>10</pointsize>
+          </font>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
+         <property name="text">
+          <string>Salida</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QRadioButton" name="rb_entrada">
+         <property name="font">
+          <font>
+           <family>MS Reference Sans Serif</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Nueva entrada</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QRadioButton" name="rb_agregarInsumo">
+         <property name="font">
+          <font>
+           <family>MS Reference Sans Serif</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Agregar insumo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="lbl_fecha">
+         <property name="font">
+          <font>
+           <family>MS Reference Sans Serif</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>FECHA</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -502,16 +547,26 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QRadioButton" name="rb_entrada">
+       <item row="8" column="0">
+        <widget class="QFrame" name="f_relleno2">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QPushButton" name="btn_ingresar_2">
          <property name="font">
           <font>
            <family>MS Reference Sans Serif</family>
-           <pointsize>10</pointsize>
+           <pointsize>8</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Nueva entrada</string>
+          <string>CERRAR SESION</string>
          </property>
         </widget>
        </item>
@@ -577,7 +632,7 @@
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
