@@ -47,6 +47,6 @@ private:
     Database db;
     vector<Usuarios> user;
     bool esNumero(const string&);
-    void actualiarCBES();
+    void actualizarCBES();
 };
 #endif // MAINWINDOW_H

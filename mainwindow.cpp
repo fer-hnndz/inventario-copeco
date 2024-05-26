@@ -57,11 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Agregar insumos al combo box
 
-    vector<Insumo> insumos = db.getAllInsumos();
-    for(Insumo& ins: insumos) {
-        QString item = QString("%1").arg(QString::number(ins.getId()));
-        ui->cb_codigo->addItem(item);
-    }
+    actualizarCBES();
+
     db.crearUsuarios();
     user = db.getUsuarios();
 //    for(Usuarios& user: user) {
@@ -237,7 +234,12 @@ void MainWindow::on_btn_agregarInsumo_clicked()
         if (!exitente) {
             db.agregarInsumos(code, ui->le_descripcionA->text().toStdString());
             QMessageBox::information(this,  "Datos congruentes","Nuevo insumo ha sido registrado.");
-
+            insumos.clear();
+            ui->cb_codigo->blockSignals(true);  // Bloquea señales
+            ui->cb_codigo->clear();  // Limpia el ComboBox
+            ui->cb_codigo->blockSignals(false);
+            actualizarCBES();
+            db.getAllInsumos();
             ui->le_codigoA->clear();
             ui->le_descripcionA->clear();
         } else {
@@ -283,17 +285,14 @@ void MainWindow::on_cb_codigo_currentTextChanged(const QString &arg1)
 
 //DESPUES DE AQUI METAN EL CODIGO PENSANTE
 
-void MainWindow::actualiarCBES()
-{
-    //ui->cb_codigo->clear(); ESTO CRASHEA
+void MainWindow::actualizarCBES() {
     vector<Insumo> insumos = db.getAllInsumos();
-    for(Insumo& ins: insumos) {
+    qDebug() << "Añadiendo ítems al ComboBox";
+    for(const Insumo& ins: insumos) {
         QString item = QString("%1").arg(QString::number(ins.getId()));
         ui->cb_codigo->addItem(item);
     }
 }
-
-
 
 void MainWindow::on_RB_Recibir_clicked()
 {

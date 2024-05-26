@@ -22,8 +22,8 @@ public:
         this->salidas=salidas;
     }
 
-    int getId() { return id; }
-    string getDescripcion() { return descripcion; }
+    int getId() const { return id; }
+    string getDescripcion() const { return descripcion; }
 
     int getsaldoActual() { return saldoActual; }
     int getentradas() { return entradas; }
