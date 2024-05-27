@@ -6,6 +6,7 @@
 #include <QVariant>
 #include "Insumo.h"
 #include "Usuarios.h"
+#include "ES.h"
 #include <vector>
 #include <QDateTime>
 #include <QDebug>
@@ -55,6 +56,30 @@ public:
 
         return insumos;
 
+    }
+
+    vector<ES> getAll_ES(){
+        QSqlQuery query(conn);
+        query.exec("SELECT * FROM ES;");
+
+        vector<ES> eS;
+        while(query.next()) {
+            int id = query.value(0).toInt();
+            int insumo = query.value(1).toInt();
+            string fecha = query.value(2).toString().toStdString();
+            int cantidad = query.value(3).toInt();
+            string procedencia = query.value(4).toString().toStdString();
+            string responsable= query.value(5).toString().toStdString();
+            string recibido= query.value(6).toString().toStdString();
+
+
+
+            ES es(id, insumo,fecha,cantidad,procedencia, responsable, recibido);
+
+            eS.push_back(es);
+        }
+
+        return eS;
     }
 
     /*

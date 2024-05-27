@@ -14,6 +14,7 @@ SOURCES += \
 
 HEADERS += \
     Database.h \
+    ES.h \
     Insumo.h \
     Usuarios.h \
     mainwindow.h

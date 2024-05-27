@@ -64,10 +64,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->tab_copeco->setCurrentIndex(0);
     ui->rb_inventario->setChecked(true);
-//    for(Usuarios& user: user) {
-//       // QString item = QString(".").arg(QString::number(user.getId())).arg(QString::fromStdString(user.getNombre())).arg(QString::fromStdString(user.getContrasena()));
+    //    for(Usuarios& user: user) {
+    //       // QString item = QString(".").arg(QString::number(user.getId())).arg(QString::fromStdString(user.getNombre())).arg(QString::fromStdString(user.getContrasena()));
 
-//    }
+    //    }
     //no se puede modificar, depende del combobox
     ui->le_descripcion->setEnabled(false);
 
@@ -85,6 +85,8 @@ void MainWindow::on_rb_inventario_clicked()
     QImage menu(":/new/prefix1/inv.png");
     ui->lbl_png->setPixmap(QPixmap::fromImage(menu));
     ui->tab_copeco->setCurrentIndex(0);
+    ui->tw_Mostrar->setRowCount(0);
+    ui->tw_Mostrar->setColumnCount(0);
 }
 
 void MainWindow::on_rb_entrada_clicked()
@@ -249,7 +251,7 @@ void MainWindow::on_btn_agregarInsumo_clicked()
             QMessageBox::warning(this, "Datos incongruentes", "El codigo ya existe para otro insumo");
         }
 
-        //actualiarCBES();
+
     }
 
 }
@@ -302,5 +304,52 @@ void MainWindow::on_RB_Recibir_clicked()
     ui->lbl_entradas->setText("Recibidos:");
     ui->tab_copeco->setCurrentIndex(1);
 
+}
+
+
+void MainWindow::on_rb_verResumen_clicked()
+{
+    ui->tab_copeco->setCurrentIndex(3);
+    vector<Insumo> insumos = db.getAllInsumos();
+
+
+    ui->tw_Mostrar->setRowCount(insumos.size());
+    ui->tw_Mostrar->setColumnCount(5);
+
+    QStringList headers;
+    headers << "Codigo" << "Descripción" << "Entradas" << "Salidas" << "Saldo Actual";
+    ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
+
+    // Llena la tablewidget
+    for (int row = 0; row <insumos.size();row++) {
+        ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(insumos[row].getId())));
+        ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(insumos[row].getDescripcion())));
+        ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number(insumos[row].getentradas())));
+        ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::number(insumos[row].getsalidas())));
+        ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::number(insumos[row].getsaldoActual())));
+    }
+
+}
+
+
+void MainWindow::on_rb_verEntradas_clicked()
+{
+    vector<ES> esRegistros = db.getAll_ES();
+
+       ui->tw_Mostrar->setColumnCount(7);
+       QStringList headers = {"ID", "Insumo", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
+       ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
+       ui->tw_Mostrar->setRowCount(esRegistros.size());
+
+       // Rellenar la tabla con los datos
+       for (int row = 0; row <esRegistros.size(); row++) {
+           ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(esRegistros[row].getId())));
+           ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::number(esRegistros[row].getInsumo())));
+           ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(esRegistros[row].getFecha())));
+           ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::number(esRegistros[row].getCantidad())));
+           ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(esRegistros[row].getProcedencia())));
+           ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(esRegistros[row].getResponsable())));
+           ui->tw_Mostrar->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(esRegistros[row].getRecibido())));
+       }
 }
 

@@ -42,6 +42,10 @@ private slots:
 
     void on_RB_Recibir_clicked();
 
+    void on_rb_verResumen_clicked();
+
+    void on_rb_verEntradas_clicked();
+
 private:
     Ui::MainWindow *ui;
     Database db;
