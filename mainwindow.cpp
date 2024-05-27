@@ -145,7 +145,7 @@ void MainWindow::on_btn_actividades_clicked()
     string procedencia = ui->le_procedencia->text().toStdString();
     string responsable = ui->le_responsable->text().toStdString();
     string recibe = ui->le_recibido->text().toStdString();
-    if(ui->le_descripcion->text().isEmpty() || ui->cb_codigo->currentIndex()==0 || ui->sp_cant->text().toUInt()==0 ){
+    if(ui->sp_cant->text().toUInt()==0 || ui->le_procedencia->text().isEmpty() || ui->le_responsable->text().isEmpty() || ui->le_recibido->text().isEmpty()){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
 
         /*
