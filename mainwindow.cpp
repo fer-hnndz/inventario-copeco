@@ -61,6 +61,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     db.crearUsuarios();
     user = db.getUsuarios();
+
+    ui->tab_copeco->setCurrentIndex(0);
+    ui->rb_inventario->setChecked(true);
 //    for(Usuarios& user: user) {
 //       // QString item = QString(".").arg(QString::number(user.getId())).arg(QString::fromStdString(user.getNombre())).arg(QString::fromStdString(user.getContrasena()));
 
