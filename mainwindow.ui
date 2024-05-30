@@ -27,7 +27,7 @@
        <item row="0" column="1">
         <widget class="QTabWidget" name="tab_copeco">
          <property name="currentIndex">
-          <number>1</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="tab_inventario">
           <attribute name="title">
@@ -388,6 +388,16 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="1" colspan="2">
+            <widget class="QLineEdit" name="le_contraAdm">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>9</pointsize>
+              </font>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0">
             <widget class="QLabel" name="lbl_IDAdm">
              <property name="font">
@@ -398,22 +408,6 @@
              </property>
              <property name="text">
               <string>ID (autogenerado):</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="0" colspan="3">
-            <widget class="QTableWidget" name="tw_usuarios"/>
-           </item>
-           <item row="4" column="0" colspan="3">
-            <widget class="QPushButton" name="btn_admin">
-             <property name="font">
-              <font>
-               <family>MS Reference Sans Serif</family>
-               <pointsize>8</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>CREAR</string>
              </property>
             </widget>
            </item>
@@ -430,13 +424,45 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1" colspan="2">
-            <widget class="QLineEdit" name="le_contraAdm">
+           <item row="6" column="0" colspan="3">
+            <widget class="QTableWidget" name="tw_usuarios"/>
+           </item>
+           <item row="5" column="0" colspan="3">
+            <widget class="QPushButton" name="btn_admin">
              <property name="font">
               <font>
                <family>MS Reference Sans Serif</family>
-               <pointsize>9</pointsize>
+               <pointsize>8</pointsize>
               </font>
+             </property>
+             <property name="text">
+              <string>CREAR</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QRadioButton" name="rb_normalAdm">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Normal</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <widget class="QRadioButton" name="rb_adminAdm">
+             <property name="font">
+              <font>
+               <family>MS Reference Sans Serif</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Admin</string>
              </property>
             </widget>
            </item>

@@ -52,6 +52,12 @@ private slots:
 
     void on_tw_usuarios_cellClicked(int row, int column);
 
+    void on_rb_normalAdm_clicked();
+
+    void on_rb_inventario_3_clicked();
+
+    void on_rb_adminAdm_clicked();
+
 private:
     Ui::MainWindow *ui;
     Database db;

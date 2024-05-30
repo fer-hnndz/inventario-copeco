@@ -377,7 +377,7 @@ void MainWindow::on_RB_admin_clicked()
 
 void MainWindow::on_btn_admin_clicked()
 {
-    if(ui->le_usernameAdm->text().isEmpty() || ui->le_contraAdm->text().isEmpty()){
+    if(ui->le_usernameAdm->text().isEmpty() || ui->le_contraAdm->text().isEmpty() || (!ui->rb_normalAdm->isChecked() && !ui->rb_adminAdm->isChecked())){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
     }else {
         if(db.existeUsuario(user,ui->le_usernameAdm->text().toStdString())!=-1){
@@ -388,7 +388,7 @@ void MainWindow::on_btn_admin_clicked()
             mostrarUsuarios();
             ui->le_usernameAdm->clear();
             ui->le_contraAdm->clear();
-            ui->le_IDAdm->setText(QString::number(randNum(5)));
+            ui->le_IDAdm->clear();
         }
     }
 
@@ -440,8 +440,6 @@ bool MainWindow::existeID(int id)
     return false;
 }
 
-
-
 void MainWindow::on_tw_usuarios_cellClicked(int row, int column)
 {
     if(column==4){
@@ -469,6 +467,24 @@ void MainWindow::on_tw_usuarios_cellClicked(int row, int column)
         }
         mostrarUsuarios();
     }
+
+}
+
+
+void MainWindow::on_rb_normalAdm_clicked()
+{
+    ui->le_IDAdm->setText(QString::number(randNum(5)));
+}
+
+
+void MainWindow::on_rb_inventario_3_clicked()
+{
+}
+
+
+void MainWindow::on_rb_adminAdm_clicked()
+{
+    ui->le_IDAdm->setText(QString::number(randNum(88)));
 
 }
 
