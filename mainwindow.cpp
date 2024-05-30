@@ -18,6 +18,8 @@
 #include <iostream>
 #include <sstream>
 #include <QDateTime>
+#include <cstdlib>
+#include <ctime>
 using std::ofstream;
 using std::ios;
 using std::string;
@@ -31,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->tab_copeco->tabBar()->hide();
+     user = db.getUsuarios();
 
     if(db.connect()) {
         cout << "success\n";
@@ -53,14 +56,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->le_descripcion->setDisabled(true); // descripcion de entradas
     ui->sp_saldo->setDisabled(true);
     ui->sp_entradas_salidas->setDisabled(true);
+    ui->RB_admin->setVisible(false);
+    mostrarUsuarios();
 
 
     // Agregar insumos al combo box
 
     actualizarCBES();
 
-    db.crearUsuarios();
-    user = db.getUsuarios();
+    db.inicializarUsuarios();
+
 
     ui->tab_copeco->setCurrentIndex(0);
     ui->rb_inventario->setChecked(true);
@@ -115,7 +120,9 @@ void MainWindow::on_btn_ingresar_clicked()
         string username = ui->le_username->text().toStdString();
         string password = ui->le_contra->text().toStdString();
         user = db.getUsuarios();
-        if(db.existeUsuario(user, password, username)) {
+        if(db.accederLogin(user, password, username)) {
+            ID=db.existeUsuario(user,username);
+            ui->RB_admin->setVisible(ID >= 500 ? true : false);
             ui->f_acciones->setVisible(true);
             ui->frame->setVisible(true);
             ui->f_login->setVisible(false);
@@ -299,6 +306,7 @@ void MainWindow::actualizarCBES() {
     }
 }
 
+
 void MainWindow::on_RB_Recibir_clicked()
 {
     ui->lbl_entradas->setText("Recibidos:");
@@ -309,7 +317,7 @@ void MainWindow::on_RB_Recibir_clicked()
 
 void MainWindow::on_rb_verResumen_clicked()
 {
-    ui->tab_copeco->setCurrentIndex(3);
+    ui->tab_copeco->setCurrentIndex(0);
     vector<Insumo> insumos = db.getAllInsumos();
 
 
@@ -319,6 +327,8 @@ void MainWindow::on_rb_verResumen_clicked()
     QStringList headers;
     headers << "Codigo" << "Descripción" << "Entradas" << "Salidas" << "Saldo Actual";
     ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
+    ui->tw_Mostrar->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 
     // Llena la tablewidget
     for (int row = 0; row <insumos.size();row++) {
@@ -328,7 +338,6 @@ void MainWindow::on_rb_verResumen_clicked()
         ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::number(insumos[row].getsalidas())));
         ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::number(insumos[row].getsaldoActual())));
     }
-
 }
 
 
@@ -340,6 +349,8 @@ void MainWindow::on_rb_verEntradas_clicked()
        QStringList headers = {"ID", "Insumo", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
        ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
        ui->tw_Mostrar->setRowCount(esRegistros.size());
+       ui->tw_Mostrar->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
 
        // Rellenar la tabla con los datos
        for (int row = 0; row <esRegistros.size(); row++) {
@@ -351,5 +362,113 @@ void MainWindow::on_rb_verEntradas_clicked()
            ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(esRegistros[row].getResponsable())));
            ui->tw_Mostrar->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(esRegistros[row].getRecibido())));
        }
+}
+
+
+void MainWindow::on_RB_admin_clicked()
+{
+
+    QImage menu(":/new/prefix1/menu.png");
+    ui->lbl_png->setPixmap(QPixmap::fromImage(menu));
+    ui->tab_copeco->setCurrentIndex(3);
+    ui->le_IDAdm->setText(QString::number(randNum(5)));
+}
+
+
+void MainWindow::on_btn_admin_clicked()
+{
+    if(ui->le_usernameAdm->text().isEmpty() || ui->le_contraAdm->text().isEmpty()){
+        QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
+    }else {
+        if(db.existeUsuario(user,ui->le_usernameAdm->text().toStdString())!=-1){
+            QMessageBox::warning(this,  "Datos incongruentes","Username no disponible");
+
+        }else{
+            db.agregarUsuarios(ui->le_IDAdm->text().toUInt(),ui->le_usernameAdm->text().toStdString(),ui->le_contraAdm->text().toStdString() );
+            mostrarUsuarios();
+            ui->le_usernameAdm->clear();
+            ui->le_contraAdm->clear();
+            ui->le_IDAdm->setText(QString::number(randNum(5)));
+        }
+    }
+
+}
+void MainWindow::mostrarUsuarios()
+{
+    user = db.getUsuarios();
+    ui->tw_usuarios->clear();
+    ui->tw_usuarios->setColumnCount(5);
+    QStringList headers = {"Nombre", "ID", "Contraseña", "Cargo","Cambiar Contra"};
+
+    ui->tw_usuarios->setHorizontalHeaderLabels(headers);
+    ui->tw_usuarios->setRowCount(user.size());
+    ui->tw_usuarios->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
+    for (int row = 0; row < user.size(); row++) {
+        int id = user[row].getId();
+        ui->tw_usuarios->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(user[row].getNombre())));
+        ui->tw_usuarios->setItem(row, 1, new QTableWidgetItem(QString::number(id)));
+        ui->tw_usuarios->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(user[row].getContrasena())));
+
+        QString txt = (id >= 500) ? "ADMINISTRADOR" : "NORMAL";
+        ui->tw_usuarios->setItem(row, 3, new QTableWidgetItem(txt));
+        ui->tw_usuarios->setItem(row, 4, new QTableWidgetItem("CAMBIAR"));
+    }
+}
+int MainWindow::randNum(short num)
+{
+    user= db.getUsuarios();
+    int nuevoID;
+    do{
+        if(num == 5){
+            nuevoID= rand() % 400 + 100;
+        }else{
+            nuevoID= rand() % 500 + 500;
+        }
+    }while(existeID(nuevoID));
+
+    return nuevoID;
+}
+
+bool MainWindow::existeID(int id)
+{
+    for(auto& usuario: user) {
+        if (usuario.getId()==id) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+void MainWindow::on_tw_usuarios_cellClicked(int row, int column)
+{
+    if(column==4){
+        user = db.getUsuarios();
+
+        bool ok;
+        QString neuePass = QInputDialog::getText(this, "Nueva Contraseña", "Ingrese la nueva contraseña:", QLineEdit::Normal, "", &ok);
+        if (ok && !neuePass.isEmpty()) {
+            for ( Usuarios& usuario : user) {
+                QString idTab = ui->tw_usuarios->item(row, 1)->text();
+                int idsele = idTab.toInt();
+
+                if (usuario.getId()== idsele) {
+                    usuario.setContrasena(neuePass.toStdString());
+
+                    if (!db.actualizarUsuario(usuario)) {
+                        QMessageBox::information(this, "Datos no funcan", "No se ha podido actualizar la base de datos");
+                    }
+                    break;
+                }
+            }
+        }
+        else {
+            QMessageBox::information(this, "Datos incongruentes", "Favor, no deje campos vacios");
+        }
+        mostrarUsuarios();
+    }
+
 }
 

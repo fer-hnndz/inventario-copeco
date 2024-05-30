@@ -46,11 +46,23 @@ private slots:
 
     void on_rb_verEntradas_clicked();
 
+    void on_RB_admin_clicked();
+
+    void on_btn_admin_clicked();
+
+    void on_tw_usuarios_cellClicked(int row, int column);
+
 private:
     Ui::MainWindow *ui;
     Database db;
-    vector<Usuarios> user;
     bool esNumero(const string&);
     void actualizarCBES();
+
+    //componentes de USUARIOS
+    vector<Usuarios> user;
+    short ID;
+    void mostrarUsuarios();
+    int randNum(short);
+    bool existeID(int id);
 };
 #endif // MAINWINDOW_H

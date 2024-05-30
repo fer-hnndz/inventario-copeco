@@ -131,7 +131,7 @@ public:
         return users;
 
     }
-    void crearUsuarios(){
+    void inicializarUsuarios(){
         QSqlQuery query(conn);
         query.exec("SELECT * FROM Personas;");
         query.next();
@@ -140,11 +140,11 @@ public:
         }
         vector<Usuarios> users;
 
-        Usuarios u(123, "OMAR", "123OMAR");
+        Usuarios u(789, "OMAR", "123OMAR");
         users.push_back(u);
         Usuarios us(456, "VIRGILIO", "VIRGILIOPODERSO");
         users.push_back(us);
-        Usuarios user(789, "IVAN", "IVANPOTENTE");
+        Usuarios user(350, "IVAN", "IVANPOTENTE");
         users.push_back(user);
 
         query.prepare("INSERT INTO Personas (dni, nombre, password) VALUES (:dni, :nombre, :password);");
@@ -160,7 +160,43 @@ public:
         }
     }
 
-    bool existeUsuario(vector<Usuarios> v, string contra, string username){
+    void agregarUsuarios(int ID, string username, string contra){
+        QSqlQuery query(conn);
+        query.exec("SELECT * FROM Personas;");
+
+        Usuarios u(ID, username, contra);
+
+        query.prepare("INSERT INTO Personas (dni, nombre, password) VALUES (:dni, :nombre, :password);");
+
+        query.bindValue(":dni", u.getId());
+        query.bindValue(":nombre", QString::fromStdString(u.getNombre()));
+        query.bindValue(":password", QString::fromStdString(u.getContrasena()));
+        qDebug() << "a" << u.getId()<<"b"<<QString::fromStdString(u.getNombre())<<"b"<<QString::fromStdString(u.getContrasena());
+
+        if (!query.exec()) {
+            qDebug() << "Error al insertar usuario:" << query.lastError().text();
+        }
+    }
+
+    bool actualizarUsuario( Usuarios& user) {//se añade o se quita cantidad
+            if (!conn.isOpen()) return false;
+
+            QSqlQuery query(conn);
+            query.prepare("UPDATE Personas SET nombre = :nombre, password = :password WHERE dni = :dni;");
+            query.bindValue(":nombre", QString::fromStdString(user.getNombre()));
+            query.bindValue(":password",QString::fromStdString(user.getContrasena()));
+            query.bindValue(":dni", user.getId());
+
+            if (!query.exec()) {
+                qDebug() << "Error al ejecutar el query de actualización de insumo:" << query.lastError().text();
+                return false;
+            }
+            qDebug() << "Usuario actualizado correctamente. Nuevo nombre:" <<QString::number(user.getId()) <<QString::fromStdString(user.getNombre()) << "Nueva contraseña:" << QString::fromStdString(user.getContrasena());
+
+            return true;
+        }
+
+    bool accederLogin(vector<Usuarios> v, string contra, string username){
         for (Usuarios& usuario : v) {
             if (usuario.getNombre() == username) {
                 if (usuario.getContrasena() == contra) {
@@ -170,6 +206,17 @@ public:
         }
         return false;
     }
+    //reutulizar para saber que tipo de usuario hay login y tambien para saber si ya existe un usuario con ese nombre
+    int existeUsuario(vector<Usuarios> v, string username){
+        for (Usuarios& usuario : v) {
+            if (usuario.getNombre() == username) {
+                return usuario.getId();
+            }
+        }
+        return -1;
+    }
+
+
 
     bool agregarInsumos(int codigo, string descripcion) {
         if (!conn.isOpen()) return false;
