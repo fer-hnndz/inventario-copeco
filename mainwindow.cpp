@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->tab_copeco->tabBar()->hide();
-     user = db.getUsuarios();
+    user = db.getUsuarios();
 
     if(db.connect()) {
         cout << "success\n";
@@ -496,34 +496,52 @@ void MainWindow::on_rb_verInsumo_clicked()
 
     if (ok) {
         vector<ES> esRegistros = db.getAll_ES();
+        vector<Insumo> insumos = db.getAllInsumos();
         ui->tw_Mostrar->setColumnCount(6);
         QStringList headers = {"Codigo", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
         ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
         ui->tw_Mostrar->setRowCount(0);
         ui->tw_Mostrar->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-        bool found = false;
-        bool hasEntriesOrExits = false;
+        bool insumoExiste = false;
+        bool tieneEntradasOSalidas = false;
         int row = 0;
-        for (const ES &es : esRegistros) {
-            if (es.getInsumo() == insumoId) {
-                hasEntriesOrExits = true;
-                ui->tw_Mostrar->insertRow(row);
-                ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(es.getInsumo())));
-                ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
-                ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number(es.getCantidad())));
-                ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
-                ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
-                ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
-                row++;
+
+        // Verificar si el insumo existe en la tabla Insumos
+        for (const Insumo &insumo : insumos) {
+            if (insumo.getId() == insumoId) {
+                insumoExiste = true;
+                break;
             }
         }
 
-        if (!hasEntriesOrExits) {
-            QMessageBox::information(this, "Sin Entradas o Salidas", "El insumo con el ID especificado no tiene entradas ni salidas registradas.");
+        if (insumoExiste) {
+            // Si el insumo existe, buscar sus entradas y salidas
+            for (const ES &es : esRegistros) {
+                if (es.getInsumo() == insumoId) {
+                    tieneEntradasOSalidas = true;
+
+                    ui->tw_Mostrar->insertRow(row);
+                    ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(es.getInsumo())));
+                    ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
+                    ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number(es.getCantidad())));
+                    ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
+                    ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
+                    ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
+                    row++;
+                }
+            }
+
+            if (!tieneEntradasOSalidas) {
+                QMessageBox::information(this, "Sin Entradas o Salidas", "El insumo con el ID especificado no tiene entradas ni salidas registradas.");
+            }
+        } else {
+            QMessageBox::information(this, "Insumo no existente", "El insumo con el ID especificado no existe.");
         }
     }
 }
+
+
 
 void MainWindow::on_rb_verSalidas_clicked() {
     vector<ES> esRegistros = db.getAll_ES();
