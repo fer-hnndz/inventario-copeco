@@ -3,9 +3,10 @@
 #include <string>
 
 using std::string;
+
 class ES {
 private:
-    int id;//pasar a short
+    int id;
     int insumo;
     string fecha;
     int cantidad;
@@ -13,40 +14,24 @@ private:
     string responsable;
     string recibido;
 
-
-
-
-
 public:
-    ES(int id, int insumo,string fecha, int cantidad, string procedencia, string responsable,string recibido) {
+    ES(int id, int insumo, string fecha, int cantidad, string procedencia, string responsable, string recibido) {
         this->id = id;
-        this->insumo=insumo;
-        this->fecha= fecha;
-        this->cantidad=cantidad;
-        this->procedencia=procedencia;
-        this->responsable=responsable;
-        this->recibido=recibido;
+        this->insumo = insumo;
+        this->fecha = fecha;
+        this->cantidad = cantidad;
+        this->procedencia = procedencia;
+        this->responsable = responsable;
+        this->recibido = recibido;
     }
 
     int getId() const { return id; }
-     int getInsumo() { return insumo; }
+    int getInsumo() const { return insumo; }
     string getFecha() const { return fecha; }
-    int getCantidad() { return cantidad; }
-    string getProcedencia() {return procedencia;}
-    string getResponsable() { return responsable; }
-    string getRecibido() {return recibido; }
-
-
-
-    short hayInsumoSuficiente(int code){
-
-
-    }
-
+    int getCantidad() const { return cantidad; }
+    string getProcedencia() const { return procedencia; }
+    string getResponsable() const { return responsable; }
+    string getRecibido() const { return recibido; }
 };
-
-
-
-
 
 #endif // ES_H

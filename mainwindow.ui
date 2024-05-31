@@ -27,7 +27,7 @@
        <item row="0" column="1">
         <widget class="QTabWidget" name="tab_copeco">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_inventario">
           <attribute name="title">
@@ -776,7 +776,7 @@
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

@@ -58,6 +58,10 @@ private slots:
 
     void on_rb_adminAdm_clicked();
 
+    void on_rb_verInsumo_clicked();
+
+    void on_rb_verSalidas_clicked();
+
 private:
     Ui::MainWindow *ui;
     Database db;
