@@ -343,8 +343,9 @@ void MainWindow::on_rb_verResumen_clicked()
 
 void MainWindow::on_rb_verEntradas_clicked() {
     vector<ES> esRegistros = db.getAll_ES();
-    ui->tw_Mostrar->setColumnCount(6);
-    QStringList headers = {"Codigo", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
+    vector<Insumo> insumos = db.getAllInsumos();
+    ui->tw_Mostrar->setColumnCount(7);
+    QStringList headers = {"Codigo", "Descripción", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
     ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
     ui->tw_Mostrar->setRowCount(0);
     ui->tw_Mostrar->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -352,17 +353,27 @@ void MainWindow::on_rb_verEntradas_clicked() {
     int row = 0;
     for (const ES &es : esRegistros) {
         if (!es.getFecha().empty() && es.getFecha()[0] != '-') { // Filtra solo entradas
+            QString descripcionInsumo;
+            for (const Insumo &insumo : insumos) {
+                if (insumo.getId() == es.getInsumo()) {
+                    descripcionInsumo = QString::fromStdString(insumo.getDescripcion());
+                    break;
+                }
+            }
+
             ui->tw_Mostrar->insertRow(row);
             ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(es.getInsumo())));
-            ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
-            ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number(es.getCantidad())));
-            ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
-            ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
-            ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
+            ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(descripcionInsumo)); // aquí va la descripción
+            ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
+            ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::number(es.getCantidad())));
+            ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
+            ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
+            ui->tw_Mostrar->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
             row++;
         }
     }
 }
+
 
 
 
