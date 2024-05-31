@@ -497,8 +497,8 @@ void MainWindow::on_rb_verInsumo_clicked()
     if (ok) {
         vector<ES> esRegistros = db.getAll_ES();
         vector<Insumo> insumos = db.getAllInsumos();
-        ui->tw_Mostrar->setColumnCount(6);
-        QStringList headers = {"Codigo", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
+        ui->tw_Mostrar->setColumnCount(7);
+        QStringList headers = {"Codigo", "Descripción", "Fecha", "Cantidad", "Procedencia", "Responsable", "Recibido"};
         ui->tw_Mostrar->setHorizontalHeaderLabels(headers);
         ui->tw_Mostrar->setRowCount(0);
         ui->tw_Mostrar->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
@@ -506,10 +506,13 @@ void MainWindow::on_rb_verInsumo_clicked()
         bool insumoExiste = false;
         bool tieneEntradasOSalidas = false;
         int row = 0;
+        QString insumoPaDesc;
+
 
         // Verificar si el insumo existe en la tabla Insumos
         for (const Insumo &insumo : insumos) {
             if (insumo.getId() == insumoId) {
+                insumoPaDesc = QString::fromStdString(insumo.getDescripcion());
                 insumoExiste = true;
                 break;
             }
@@ -523,11 +526,11 @@ void MainWindow::on_rb_verInsumo_clicked()
 
                     ui->tw_Mostrar->insertRow(row);
                     ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(es.getInsumo())));
-                    ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
-                    ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number(es.getCantidad())));
-                    ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
-                    ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
-                    ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
+                    ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(insumoPaDesc));                    ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
+                    ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::number(es.getCantidad())));
+                    ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
+                    ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
+                    ui->tw_Mostrar->setItem(row, 6, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
                     row++;
                 }
             }
