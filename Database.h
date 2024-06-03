@@ -320,7 +320,7 @@ public:
                     "VALUES (:insumo, :fechahora, :cantidad, :procedencia, :responsable, :recibido);");
         query.bindValue(":insumo", insumo);
         query.bindValue(":fechahora", fechahora);
-        query.bindValue(":cantidad", cantidad);
+        query.bindValue(":cantidad", cantidad * -1);
         query.bindValue(":procedencia", QString::fromStdString(procedencia));
         query.bindValue(":responsable", QString::fromStdString(responsable));
         query.bindValue(":recibido", QString::fromStdString(recibido));

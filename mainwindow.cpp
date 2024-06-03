@@ -293,6 +293,30 @@ void MainWindow::on_cb_codigo_currentTextChanged(const QString &arg1)
         ui->le_descripcion->setText(QString::fromStdString(i->getDescripcion()));
 
     delete i;
+
+    // Contar entradas historias y saldo
+
+    int entradas = 0;
+    int salidas = 0;
+    int saldo = 0;
+    vector<ES> entradasSalidas = db.getAll_ES();
+
+    for (ES es: entradasSalidas) {
+        if (es.getInsumo() == id) {
+            saldo += es.getCantidad();
+
+            if (es.getCantidad() > 0)
+                entradas += es.getCantidad();
+            else
+                salidas += es.getCantidad();
+        }
+    }
+
+    int mostrar = (ui->rb_entrada->isChecked()) ?entradas:salidas;
+    ui->sp_entradas_salidas->setValue(mostrar);
+    ui->sp_saldo->setValue(saldo);
+
+
 }
 
 //DESPUES DE AQUI METAN EL CODIGO PENSANTE
