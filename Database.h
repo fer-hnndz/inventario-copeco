@@ -13,7 +13,6 @@
 #include <QSqlError>
 #include <QMessageBox>
 
-
 using std::vector;
 
 class Database {
@@ -124,7 +123,9 @@ public:
             int dni = query.value(0).toInt();
             string nombre = query.value(1).toString().toStdString();
             string password = query.value(2).toString().toStdString();
-            Usuarios user(dni, nombre, password);
+            string userCifrado = query.value(3).toString().toStdString();
+            string contraCifrada = query.value(4).toString().toStdString();
+            Usuarios user(dni, nombre, password,userCifrado, contraCifrada);
 
             users.push_back(user);
         }
@@ -139,19 +140,21 @@ public:
             return;
         }
         vector<Usuarios> users;
-
-        Usuarios u(789, "OMAR", "123OMAR");
+        Usuarios u(789, "OMAR", "123OMAR", "D5xW", "ns#D5xW");
         users.push_back(u);
-        Usuarios us(456, "VIRGILIO", "VIRGILIOPODERSO");
+        Usuarios us(456, "VIRGILIO", "VIRGILIOPODERSO", "doWcoboD", "doWcoboDhDX WID");
         users.push_back(us);
-        Usuarios user(350, "IVAN", "IVANPOTENTE");
+        Usuarios user(350, "IVAN", "IVANPOTENTE", "odxA", "odxAhDq Aq");
         users.push_back(user);
 
-        query.prepare("INSERT INTO Personas (dni, nombre, password) VALUES (:dni, :nombre, :password);");
+        query.prepare("INSERT INTO Personas (dni, nombre, password, userCifrado, contraCifrada) VALUES (:dni, :nombre, :password, :userCifrado, :contraCifrada);");
         for (Usuarios& user : users) {
             query.bindValue(":dni", user.getId());
             query.bindValue(":nombre", QString::fromStdString(user.getNombre()));
             query.bindValue(":password", QString::fromStdString(user.getContrasena()));
+            query.bindValue(":userCifrado", QString::fromStdString(user.getUserCifrado()));
+            query.bindValue(":contraCifrada", QString::fromStdString(user.getContraCifrada()));
+
             qDebug() << "a" << user.getId()<<"b"<<QString::fromStdString(user.getNombre())<<"b"<<QString::fromStdString(user.getContrasena());
 
             if (!query.exec()) {
@@ -160,18 +163,21 @@ public:
         }
     }
 
-    void agregarUsuarios(int ID, string username, string contra){
+    void agregarUsuarios(int ID, string username, string contra, string userCifrado, string contraCifrada){
         QSqlQuery query(conn);
         query.exec("SELECT * FROM Personas;");
 
-        Usuarios u(ID, username, contra);
+        Usuarios u(ID, username, contra, userCifrado, contraCifrada);
 
-        query.prepare("INSERT INTO Personas (dni, nombre, password) VALUES (:dni, :nombre, :password);");
+        query.prepare("INSERT INTO Personas (dni, nombre, password, userCifrado, contraCifrada) VALUES (:dni, :nombre, :password, :userCifrado, :contraCifrada);");
 
         query.bindValue(":dni", u.getId());
         query.bindValue(":nombre", QString::fromStdString(u.getNombre()));
         query.bindValue(":password", QString::fromStdString(u.getContrasena()));
-        qDebug() << "a" << u.getId()<<"b"<<QString::fromStdString(u.getNombre())<<"b"<<QString::fromStdString(u.getContrasena());
+        query.bindValue(":userCifrado", QString::fromStdString(u.getUserCifrado()));
+        query.bindValue(":contraCifrada", QString::fromStdString(u.getContraCifrada()));
+
+        qDebug() << "a" << u.getId()<<"b"<<QString::fromStdString(u.getNombre())<<"b"<<QString::fromStdString(u.getContrasena()) <<"c"<<QString::fromStdString(u.getUserCifrado()) <<"d"<<QString::fromStdString(u.getContraCifrada());
 
         if (!query.exec()) {
             qDebug() << "Error al insertar usuario:" << query.lastError().text();
@@ -378,7 +384,10 @@ public:
 
         return true;
     }
+
+
 private:
+
     /*
      * Crea las tablas para usar la base de datos
      */
@@ -386,7 +395,7 @@ private:
         if (!conn.isOpen()) return;
 
         QSqlQuery schemaQuery(conn);
-        schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL, password TEXT NOT NULL);");
+        schemaQuery.exec("CREATE TABLE Personas(dni TEXT PRIMARY KEY NOT NULL, nombre string NOT NULL, password TEXT NOT NULL, userCifrado TEXT NOT NULL, contraCifrada TEXT NOT NULL);");
         schemaQuery.exec("CREATE TABLE Insumos(id INTEGER PRIMARY KEY, descripcion TEXT NOT NULL, actual INTEGER, entradas INTEGER, salidas INTEGER);");
         schemaQuery.exec("CREATE TABLE ES(id INTEGER PRIMARY KEY AUTOINCREMENT, insumo INTEGER, fecha TEXT, cantidad INTEGER, procedencia TEXT, responsable TEXT, recibido TEXT, FOREIGN KEY(responsable) REFERENCES Personas(dni), FOREIGN KEY(recibido) REFERENCES Personas(dni));");
         conn.commit();

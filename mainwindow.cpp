@@ -415,6 +415,7 @@ void MainWindow::on_RB_admin_clicked()
 
 void MainWindow::on_btn_admin_clicked()
 {
+
     if(ui->le_usernameAdm->text().isEmpty() || ui->le_contraAdm->text().isEmpty() || (!ui->rb_normalAdm->isChecked() && !ui->rb_adminAdm->isChecked())){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
     }else {
@@ -422,7 +423,10 @@ void MainWindow::on_btn_admin_clicked()
             QMessageBox::warning(this,  "Datos incongruentes","Username no disponible");
 
         }else{
-            db.agregarUsuarios(ui->le_IDAdm->text().toUInt(),ui->le_usernameAdm->text().toStdString(),ui->le_contraAdm->text().toStdString() );
+            string userCifrado = cifrar(ui->le_usernameAdm->text().toStdString());
+            string contraCifrada = cifrar(ui->le_contraAdm->text().toStdString());
+
+            db.agregarUsuarios(ui->le_IDAdm->text().toUInt(),ui->le_usernameAdm->text().toStdString(),ui->le_contraAdm->text().toStdString(), userCifrado, contraCifrada );
             mostrarUsuarios();
             ui->le_usernameAdm->clear();
             ui->le_contraAdm->clear();
@@ -605,5 +609,84 @@ void MainWindow::on_rb_verSalidas_clicked() {
         }
     }
 }
+
+string MainWindow::cifrar(string texto)
+{
+    string cifrado = "";
+
+    for (int i = 0; i < texto.size(); i++) {
+        int valorASCII = static_cast<int>(texto[i]);
+        int modulado = Modular(valorASCII, 11413, 3533);
+
+        cout << modulado << "\n";
+
+        // Busca la posición del valor modulado en la lista de caracteres disponibles
+        for (int pos = 0; pos < caracteresDisponibles.size(); pos++)
+        {
+            if (caracteresModulados.at(pos) == modulado) {
+                cifrado += caracteresDisponibles.at(pos);
+                break;
+            }
+        }
+    }
+
+    return cifrado;
+}
+
+
+string MainWindow::descifrar(string texto) {
+    string descifrado = "";
+
+    for (int i = 0; i < texto.size(); i++) {
+        // Buscar la posicion de ese char en los disponibles
+        int posChar;
+
+        for (int pos = 0; pos < caracteresDisponibles.size(); pos++) {
+            if (caracteresDisponibles.at(pos) == texto.at(i)) {
+                posChar = pos;
+                break;
+            }
+        }
+
+        int moduladoEncontrado = caracteresModulados.at(posChar);
+
+        int modulacionInversa = Modular(moduladoEncontrado, 11413, 6597);
+        cout << modulacionInversa << "\n";
+        cout << (char) modulacionInversa << "\n";
+
+        descifrado += (char) modulacionInversa;
+
+    }
+    return descifrado;
+}
+
+
+vector<int *> MainWindow::de2bi(int x)
+{
+    vector <int*> b;
+    int mod=0;
+    while(x>0){
+        mod=x%2;
+        b.push_back(new int(mod));
+        x=x/2;
+    }
+    return b;
+}
+
+int MainWindow::Modular(int b, int N, int n)
+{
+    int a = 1;
+    b = b % N;
+    vector <int *> Villanueva = de2bi(n);
+
+    for(int i=0 ; i < Villanueva.size(); i++){
+        if(*Villanueva[i] == 1)
+            a = (a*b)%N;
+        b = b*b;
+        b = b%N;
+    }
+    return a%N;
+}
+
 
 

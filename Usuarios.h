@@ -8,12 +8,16 @@ private:
     int id;
     string nombre;
     string contrasena;
+    string userCifrado;
+    string contraCifrada;
 
 public:
-    Usuarios(int id, string nombre,string contrasena) {
+    Usuarios(int id, string nombre,string contrasena, string userCifrado, string contraCifrada) {
         this->id = id;
         this->nombre = nombre;
         this->contrasena= contrasena;
+        this->userCifrado = userCifrado;
+        this->contraCifrada = contraCifrada;
     }
 
     int getId() { return id; }
@@ -29,6 +33,30 @@ public:
     void setId(int newId) { id = newId; }
      void setContrasena(const string& newContrasena) { contrasena = newContrasena; }
 
+     const string &getUserCifrado() const;
+     void setUserCifrado(const string &newUserCifrado);
+     const string &getContraCifrada() const;
+     void setContraCifrada(const string &newContraCifrada);
 };
+
+inline const string &Usuarios::getContraCifrada() const
+{
+    return contraCifrada;
+}
+
+inline void Usuarios::setContraCifrada(const string &newContraCifrada)
+{
+    contraCifrada = newContraCifrada;
+}
+
+inline const string &Usuarios::getUserCifrado() const
+{
+    return userCifrado;
+}
+
+inline void Usuarios::setUserCifrado(const string &newUserCifrado)
+{
+    userCifrado = newUserCifrado;
+}
 
 #endif // USUARIOS_H

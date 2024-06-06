@@ -33,10 +33,7 @@ public:
     void setentradas(int entradas) { this->entradas=entradas; }
     void setsalidas(int salidas) { this->salidas=salidas; }
 
-    short hayInsumoSuficiente(int code){
 
-
-    }
 
 };
 
