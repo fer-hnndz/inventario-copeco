@@ -333,6 +333,8 @@ void MainWindow::actualizarCBES() {
 
 void MainWindow::on_RB_Recibir_clicked()
 {
+    QImage menu(":/new/prefix1/ent.png");
+    ui->lbl_png->setPixmap(QPixmap::fromImage(menu));
     ui->lbl_entradas->setText("Recibidos:");
     ui->tab_copeco->setCurrentIndex(1);
 
@@ -403,7 +405,7 @@ void MainWindow::on_rb_verEntradas_clicked() {
 
 void MainWindow::on_RB_admin_clicked()
 {
-
+    mostrarUsuarios();
     QImage menu(":/new/prefix1/menu.png");
     ui->lbl_png->setPixmap(QPixmap::fromImage(menu));
     ui->tab_copeco->setCurrentIndex(3);
@@ -434,7 +436,7 @@ void MainWindow::mostrarUsuarios()
     user = db.getUsuarios();
     ui->tw_usuarios->clear();
     ui->tw_usuarios->setColumnCount(5);
-    QStringList headers = {"Nombre", "ID", "Contraseña", "Cargo","Cambiar Contra"};
+    QStringList headers = {"Nombre", "ID", "Contraseña", "Cargo","Cambiar Contraseña"};
 
     ui->tw_usuarios->setHorizontalHeaderLabels(headers);
     ui->tw_usuarios->setRowCount(user.size());
