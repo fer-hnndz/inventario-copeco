@@ -156,7 +156,7 @@ void MainWindow::on_btn_actividades_clicked()
     string procedencia = ui->le_procedencia->text().toStdString();
     string responsable = ui->le_responsable->text().toStdString();
     string recibe = ui->le_recibido->text().toStdString();
-    if(ui->sp_cant->text().toUInt()==0 || ui->le_procedencia->text().isEmpty() || ui->le_responsable->text().isEmpty() || ui->le_recibido->text().isEmpty()){
+    if(ui->sp_cant->text().toUInt()==0 || ui->le_procedencia->text().isEmpty() ||ui->cb_codigo->currentText().isEmpty() || ui->le_responsable->text().isEmpty() || ui->le_recibido->text().isEmpty()){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
 
         /*
@@ -428,7 +428,7 @@ void MainWindow::on_btn_admin_clicked()
             string userCifrado = cifrar(ui->le_usernameAdm->text().toStdString());
             string contraCifrada = cifrar(ui->le_contraAdm->text().toStdString());
 
-            db.agregarUsuarios(ui->le_IDAdm->text().toUInt(),ui->le_usernameAdm->text().toStdString(),ui->le_contraAdm->text().toStdString(), userCifrado, contraCifrada );
+            db.agregarUsuarios(ui->le_IDAdm->text().toUInt(),ui->le_usernameAdm->text().toStdString(), userCifrado, contraCifrada );
             mostrarUsuarios();
             ui->le_usernameAdm->clear();
             ui->le_contraAdm->clear();
@@ -452,7 +452,7 @@ void MainWindow::mostrarUsuarios()
         int id = user[row].getId();
         ui->tw_usuarios->setItem(row, 0, new QTableWidgetItem(QString::fromStdString(user[row].getNombre())));
         ui->tw_usuarios->setItem(row, 1, new QTableWidgetItem(QString::number(id)));
-        ui->tw_usuarios->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(user[row].getContrasena())));
+        ui->tw_usuarios->setItem(row, 2, new QTableWidgetItem(QString::fromStdString(descifrar(user[row].getContraCifrada()))));
 
         QString txt = (id >= 500) ? "ADMINISTRADOR" : "NORMAL";
         ui->tw_usuarios->setItem(row, 3, new QTableWidgetItem(txt));
@@ -490,14 +490,14 @@ void MainWindow::on_tw_usuarios_cellClicked(int row, int column)
         user = db.getUsuarios();
 
         bool ok;
-        QString neuePass = QInputDialog::getText(this, "Nueva Contraseña", "Ingrese la nueva contraseña:", QLineEdit::Normal, "", &ok);
-        if (ok && !neuePass.isEmpty()) {
+        QString nuevaContra = QInputDialog::getText(this, "Nueva Contraseña", "Ingrese la nueva contraseña:", QLineEdit::Normal, "", &ok);
+        if (ok && !nuevaContra.isEmpty()) {
             for ( Usuarios& usuario : user) {
                 QString idTab = ui->tw_usuarios->item(row, 1)->text();
                 int idsele = idTab.toInt();
 
                 if (usuario.getId()== idsele) {
-                    usuario.setContrasena(cifrar(neuePass.toStdString()));
+                    usuario.setContraCifrada(cifrar(nuevaContra.toStdString()));
 
                     if (!db.actualizarUsuario(usuario)) {
                         QMessageBox::information(this, "Datos no funcan", "No se ha podido actualizar la base de datos");
@@ -603,7 +603,7 @@ void MainWindow::on_rb_verSalidas_clicked() {
             ui->tw_Mostrar->insertRow(row);
             ui->tw_Mostrar->setItem(row, 0, new QTableWidgetItem(QString::number(es.getInsumo())));
             ui->tw_Mostrar->setItem(row, 1, new QTableWidgetItem(QString::fromStdString(es.getFecha())));
-            ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number(es.getCantidad())));
+            ui->tw_Mostrar->setItem(row, 2, new QTableWidgetItem(QString::number((es.getCantidad())*(-1))));
             ui->tw_Mostrar->setItem(row, 3, new QTableWidgetItem(QString::fromStdString(es.getProcedencia())));
             ui->tw_Mostrar->setItem(row, 4, new QTableWidgetItem(QString::fromStdString(es.getResponsable())));
             ui->tw_Mostrar->setItem(row, 5, new QTableWidgetItem(QString::fromStdString(es.getRecibido())));
@@ -689,6 +689,4 @@ int MainWindow::Modular(int b, int N, int n)
     }
     return a%N;
 }
-
-
 

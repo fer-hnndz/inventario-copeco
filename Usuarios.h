@@ -7,22 +7,19 @@ class Usuarios{
 private:
     int id;
     string nombre;
-    string contrasena;
     string userCifrado;
     string contraCifrada;
 
 public:
-    Usuarios(int id, string nombre,string contrasena, string userCifrado, string contraCifrada) {
+    Usuarios(int id, string nombre, string userCifrado, string contraCifrada) {
         this->id = id;
         this->nombre = nombre;
-        this->contrasena= contrasena;
         this->userCifrado = userCifrado;
         this->contraCifrada = contraCifrada;
     }
 
     int getId() { return id; }
     string getNombre() { return nombre; }
-    string getContrasena() { return contrasena; }
 
     /*
      * ACLAREMOS LO SIGUIENTE:
@@ -31,7 +28,6 @@ public:
      * estos ID SE CREARAN DE FORMA ALEATORIA SIEMPRE Y CUANDO NO SEAN IGUALES A LOS EXISTENTES
      * */
     void setId(int newId) { id = newId; }
-     void setContrasena(const string& newContrasena) { contrasena = newContrasena; }
 
      const string &getUserCifrado() const;
      void setUserCifrado(const string &newUserCifrado);
