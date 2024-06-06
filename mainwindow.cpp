@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    prepararCaracteres();
     ui->tab_copeco->tabBar()->hide();
     user = db.getUsuarios();
 
