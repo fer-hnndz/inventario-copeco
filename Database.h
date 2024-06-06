@@ -202,10 +202,10 @@ public:
             return true;
         }
 
-    bool accederLogin(vector<Usuarios> v, string contra, string username){
+    bool accederLogin(vector<Usuarios> v, string contraCifrada, string usernameCifrado){
         for (Usuarios& usuario : v) {
-            if (usuario.getNombre() == username) {
-                if (usuario.getContrasena() == contra) {
+            if (usuario.getUserCifrado()== usernameCifrado) {
+                if (usuario.getContraCifrada() == contraCifrada) {
                     return true;
                 }
             }
@@ -215,7 +215,7 @@ public:
     //reutulizar para saber que tipo de usuario hay login y tambien para saber si ya existe un usuario con ese nombre
     int existeUsuario(vector<Usuarios> v, string username){
         for (Usuarios& usuario : v) {
-            if (usuario.getNombre() == username) {
+            if (usuario.getNombre()== username) {
                 return usuario.getId();
             }
         }

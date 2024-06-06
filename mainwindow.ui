@@ -396,6 +396,9 @@
                <pointsize>9</pointsize>
               </font>
              </property>
+             <property name="echoMode">
+              <enum>QLineEdit::Password</enum>
+             </property>
             </widget>
            </item>
            <item row="3" column="0">
@@ -462,7 +465,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Admin</string>
+              <string>Administrador</string>
              </property>
             </widget>
            </item>
@@ -505,6 +508,9 @@
            <family>MS Reference Sans Serif</family>
            <pointsize>9</pointsize>
           </font>
+         </property>
+         <property name="echoMode">
+          <enum>QLineEdit::Password</enum>
          </property>
         </widget>
        </item>
@@ -776,7 +782,7 @@
      <x>0</x>
      <y>0</y>
      <width>1055</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

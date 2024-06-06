@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tab_copeco->tabBar()->hide();
     user = db.getUsuarios();
 
+
     if(db.connect()) {
         cout << "success\n";
     } else QMessageBox::warning(this,  "Base de datos","Error de conexion");
@@ -118,11 +119,11 @@ void MainWindow::on_btn_ingresar_clicked()
     if(ui->le_username->text().isEmpty() || ui->le_contra->text().isEmpty()){
         QMessageBox::warning(this,  "Datos incongruentes","Favor, asegurese de llenar todos los campos");
     }else{
-        string username = ui->le_username->text().toStdString();
-        string password = ui->le_contra->text().toStdString();
+        string userCifrado = cifrar(ui->le_username->text().toStdString());
+        string passwordCifrada = cifrar(ui->le_contra->text().toStdString());
         user = db.getUsuarios();
-        if(db.accederLogin(user, password, username)) {
-            ID=db.existeUsuario(user,username);
+        if(db.accederLogin(user, passwordCifrada, userCifrado)) {
+            ID=db.existeUsuario(user,ui->le_username->text().toStdString());
             ui->RB_admin->setVisible(ID >= 500 ? true : false);
             ui->f_acciones->setVisible(true);
             ui->frame->setVisible(true);
@@ -496,7 +497,7 @@ void MainWindow::on_tw_usuarios_cellClicked(int row, int column)
                 int idsele = idTab.toInt();
 
                 if (usuario.getId()== idsele) {
-                    usuario.setContrasena(neuePass.toStdString());
+                    usuario.setContrasena(cifrar(neuePass.toStdString()));
 
                     if (!db.actualizarUsuario(usuario)) {
                         QMessageBox::information(this, "Datos no funcan", "No se ha podido actualizar la base de datos");
