@@ -314,7 +314,7 @@ void MainWindow::on_cb_codigo_currentTextChanged(const QString &arg1)
         }
     }
 
-    int mostrar = (ui->rb_entrada->isChecked()) ?entradas:salidas;
+    int mostrar = (ui->rb_entrada->isChecked() || ui->RB_Recibir->isChecked()) ?entradas:salidas;
     ui->sp_entradas_salidas->setValue(mostrar);
     ui->sp_saldo->setValue(saldo);
 

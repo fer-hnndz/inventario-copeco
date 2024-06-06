@@ -27,7 +27,7 @@
        <item row="0" column="1">
         <widget class="QTabWidget" name="tab_copeco">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab_inventario">
           <attribute name="title">
@@ -149,6 +149,12 @@
             <widget class="QComboBox" name="cb_codigo">
              <property name="currentText">
               <string/>
+             </property>
+             <property name="maxVisibleItems">
+              <number>15</number>
+             </property>
+             <property name="sizeAdjustPolicy">
+              <enum>QComboBox::AdjustToContents</enum>
              </property>
             </widget>
            </item>
